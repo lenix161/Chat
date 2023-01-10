@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "475505543113",
+    "firebase_url": "https://database-91987-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "database-91987",
+    "storage_bucket": "database-91987.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:475505543113:android:52d8e8627e77c5fc5a8a18",
+        "android_client_info": {
+          "package_name": "com.example.chat2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "475505543113-gtrfjak87h94su29kh9asvmnbpj4r0a4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtZ5NloPogD9uQQVgloUiOmCnWUagbt0o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "475505543113-gtrfjak87h94su29kh9asvmnbpj4r0a4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
