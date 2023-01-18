@@ -10,6 +10,8 @@ import com.example.chat2.databinding.ChatsFragmentBinding
 import com.example.chat2.model.Message
 import com.example.chat2.recyclerView.Data
 import com.example.chat2.recyclerView.MessageAdapter
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -17,7 +19,10 @@ import com.google.firebase.ktx.Firebase
 class ChatsFragment: Fragment() {
     private lateinit var binding: ChatsFragmentBinding
     private val adapter = MessageAdapter()
-    private lateinit var database: DatabaseReference
+    private lateinit var databaseMessages: DatabaseReference
+    private lateinit var databaseUsers: DatabaseReference
+    private lateinit var auth: FirebaseAuth
+    private lateinit var userName: String
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,35 +30,36 @@ class ChatsFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = ChatsFragmentBinding.inflate(inflater, container, false)
+        auth = Firebase.auth
 
-        database = Firebase
+        databaseMessages = Firebase
             .database("https://database-91987-default-rtdb.europe-west1.firebasedatabase.app/")
             .getReference("messages")
+
+        databaseUsers = Firebase
+            .database("https://database-91987-default-rtdb.europe-west1.firebasedatabase.app/")
+            .getReference("users")
+
 
         binding.messagesRcView.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL, false)
         binding.messagesRcView.adapter = adapter
 
         readDataFromDB()
+        getNameFromDB()
 
-        val usersDB = Firebase
-            .database("https://database-91987-default-rtdb.europe-west1.firebasedatabase.app/")
-            .getReference("users")
-
-        val snap = usersDB.child("")
-
-        binding.sendBtn.setOnClickListener { onClickMessageSend() }
+        binding.sendBtn.setOnClickListener { onClickMessageSend(userName) }
 
         return binding.root
     }
 
 
     /** Send message to DB */
-    private fun onClickMessageSend(){
+    private fun onClickMessageSend(userName: String){
         if (binding.editText.text.isNotEmpty()){
             val msgText = binding.editText.text.toString()
-            val msgInstance = Message("User", msgText, Message.getTime())
+            val msgInstance = Message(userName, msgText, Message.getTime())
 
-            database.push().setValue(msgInstance)
+            databaseMessages.push().setValue(msgInstance)
 
             binding.editText.text.clear()
         }
@@ -81,7 +87,29 @@ class ChatsFragment: Fragment() {
 
         }
 
-        database.addValueEventListener(eventListener)
+        databaseMessages.addValueEventListener(eventListener)
+    }
+    
+    /** Get user name from DB */
+    private fun getNameFromDB(){
+        val eventListener = object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (item in snapshot.children){
+                    val email = item.child("email").value
+                    if(email != null && email == auth.currentUser?.email){
+                        val name = item.child("userName").value.toString()
+                        userName = name
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        }
+
+        databaseUsers.addValueEventListener(eventListener)
     }
 
     companion object{
