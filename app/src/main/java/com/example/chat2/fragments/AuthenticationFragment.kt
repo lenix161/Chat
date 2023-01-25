@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import com.example.chat2.activities.MainActivity
 import com.example.chat2.databinding.FragmentAuthentificationBinding
 import com.example.chat2.model.User
+import com.example.chat2.recyclerViewChat.Data
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference

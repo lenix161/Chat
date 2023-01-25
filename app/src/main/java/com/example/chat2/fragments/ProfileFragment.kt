@@ -1,16 +1,15 @@
 package com.example.chat2.fragments
 
-import android.opengl.Visibility
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.chat2.R
+import com.example.chat2.activities.RegistrationActivity
 import com.example.chat2.databinding.ProfileFragmentBinding
-import com.example.chat2.model.Message
-import com.example.chat2.recyclerView.Data
+import com.example.chat2.recyclerViewChat.Data
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -18,7 +17,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.snapshots
 import com.google.firebase.ktx.Firebase
 
 class ProfileFragment: Fragment() {
@@ -44,6 +42,7 @@ class ProfileFragment: Fragment() {
 
         binding.editUsernameButton.setOnClickListener { startEditName() }
         binding.saveNewUsernameButton.setOnClickListener { saveNewName() }
+        binding.logoutButton.setOnClickListener { logout() }
 
         return binding.root
     }
@@ -104,6 +103,12 @@ class ProfileFragment: Fragment() {
                 .child("userName")
                 .setValue(newName)
         }
+    }
+
+    private fun logout(){
+        auth.signOut()
+        startActivity(Intent(activity, RegistrationActivity::class.java))
+        activity?.finish()
     }
 
     companion object{

@@ -8,8 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chat2.databinding.ChatsFragmentBinding
 import com.example.chat2.model.Message
-import com.example.chat2.recyclerView.Data
-import com.example.chat2.recyclerView.MessageAdapter
+import com.example.chat2.recyclerViewChat.Data
+import com.example.chat2.recyclerViewChat.MessageAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
@@ -22,7 +22,7 @@ class ChatsFragment: Fragment() {
     private lateinit var databaseMessages: DatabaseReference
     private lateinit var databaseUsers: DatabaseReference
     private lateinit var auth: FirebaseAuth
-    private lateinit var userName: String
+    public lateinit var userName: String
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,13 +39,13 @@ class ChatsFragment: Fragment() {
         databaseUsers = Firebase
             .database("https://database-91987-default-rtdb.europe-west1.firebasedatabase.app/")
             .getReference("users")
-
+        getNameFromDB()
 
         binding.messagesRcView.layoutManager = LinearLayoutManager(context,LinearLayoutManager.VERTICAL, false)
         binding.messagesRcView.adapter = adapter
 
         readDataFromDB()
-        getNameFromDB()
+        //getNameFromDB()
 
         binding.sendBtn.setOnClickListener { onClickMessageSend(userName) }
 
@@ -57,7 +57,8 @@ class ChatsFragment: Fragment() {
     private fun onClickMessageSend(userName: String){
         if (binding.editText.text.isNotEmpty()){
             val msgText = binding.editText.text.toString()
-            val msgInstance = Message(userName, msgText, Message.getTime())
+            val usrSenderId = auth.currentUser?.uid.toString()
+            val msgInstance = Message( usrSenderId, userName, msgText, Message.getTime())
 
             databaseMessages.push().setValue(msgInstance)
 
@@ -75,7 +76,7 @@ class ChatsFragment: Fragment() {
                 for (item in snapshot.children){
                     val msg = item.getValue(Message::class.java)
                     if(msg != null){
-                        adapter.addMessage(msg)
+                        adapter.addMessageToList(msg)
                     }
                 }
                 binding.messagesRcView.scrollToPosition(adapter.itemCount-1)
@@ -89,7 +90,7 @@ class ChatsFragment: Fragment() {
 
         databaseMessages.addValueEventListener(eventListener)
     }
-    
+
     /** Get user name from DB */
     private fun getNameFromDB(){
         val eventListener = object: ValueEventListener {
